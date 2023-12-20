@@ -30,17 +30,8 @@
                     $password = $_POST["passwordLog"];
 
                     if ($userObj->isValidCredentials($email, $password)) {
-                        $user = $userObj->getUserByEmail($email);
-                
-                        $_SESSION['id'] = $user['id'];
-                        $_SESSION['image'] = $user['image'];
-                        $_SESSION['firstName'] = $user['firstName'];
-                        $_SESSION['lastName'] = $user['lastName'];
-                        $_SESSION['email'] = $user['email'];
-                        $_SESSION['phoneNum'] = $user['phoneNum'];
-                        $_SESSION['role'] = $user['role'];
-                        $_SESSION['equipeID'] = $user['equipeID'];
-                        
+                        $userObj->initSession($email);
+
                         if ($_SESSION['role'] == 'user') {
                             header("Location: dashboardUser.php");
                             exit();

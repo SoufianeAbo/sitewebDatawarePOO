@@ -96,6 +96,35 @@ class User {
             return null;
         }
     }
+
+    public function initSession($email) {
+    $user = $this->getUserByEmail($email);
+
+    if ($user) {
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['image'] = $user['image'];
+        $_SESSION['firstName'] = $user['firstName'];
+        $_SESSION['lastName'] = $user['lastName'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['phoneNum'] = $user['phoneNum'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['equipeID'] = $user['equipeID'];
+
+        if ($_SESSION['role'] == 'user') {
+            header("Location: dashboardUser.php");
+            exit();
+        } else if ($_SESSION['role'] == 'scrumMaster') {
+            header("Location: dashboardScrum.php");
+            exit();
+        } else if ($_SESSION['role'] == 'prodOwner') {
+            header("Location: dashboardProd.php");
+            exit();
+        }
+    } else {
+        header("Location: login.php");
+        exit();
+    }
+}
 }
 
 $userObj = new User();
