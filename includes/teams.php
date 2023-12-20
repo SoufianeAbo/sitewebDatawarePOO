@@ -26,6 +26,19 @@ class Team {
         return $teams;
     }
 
+    public function getTeamById($equipeID) {
+        $sql = "SELECT * FROM teams WHERE id = $equipeID";
+        $result = $this->conn->query($sql);
+
+        $teams = array();
+
+        while ($row = $result->fetch_assoc()) {
+            $teams[] = $row;
+        }
+
+        return $teams;
+    }
+
     public function __destruct() {
         $this->conn->close();
     }

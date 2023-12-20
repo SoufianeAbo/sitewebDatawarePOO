@@ -38,6 +38,57 @@ class User {
         return $users;
     }
 
+    public function getRoleColor($role) {
+        if ($role == 'user') {
+            return 'gray';
+        } elseif ($role == 'scrumMaster') {
+            return 'green';
+        } elseif ($role == 'prodOwner') {
+            return 'red';
+        } else {
+            return 'black';
+        }
+    }
+
+    public function getRoleIcon($role) {
+        if ($role == 'user') {
+            return 'fa-solid fa-user mr-2';
+        } elseif ($role == 'scrumMaster') {
+            return 'fa-solid fa-user-pen pr-2';
+        } elseif ($role == 'prodOwner') {
+            return 'fa-solid fa-user-gear pr-2';
+        } else {
+            return 'fa-solid fa-question';
+        }
+    }
+
+    public function getRoleName($role) {
+        if ($role == 'user') {
+            return 'User';
+        } elseif ($role == 'scrumMaster') {
+            return 'Scrum Master';
+        } elseif ($role == 'prodOwner') {
+            return 'Product Owner';
+        } else {
+            return 'Unknown';
+        }
+    }
+
+    public function getAllUsersFromTeam($equipeID) {
+        $sql = "SELECT * FROM users WHERE equipeID = $equipeID";
+        $result = $this->conn->query($sql);
+
+        $users = array();
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+        }
+
+        return $users;
+    }
+
     public function getUser($userId) {
         $sql = "SELECT * FROM users WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
