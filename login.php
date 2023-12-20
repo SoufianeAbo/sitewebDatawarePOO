@@ -31,17 +31,6 @@
 
                     if ($userObj->isValidCredentials($email, $password)) {
                         $userObj->initSession($email);
-
-                        if ($_SESSION['role'] == 'user') {
-                            header("Location: dashboardUser.php");
-                            exit();
-                        } else if ($_SESSION['role'] == 'scrumMaster') {
-                            header("Location: dashboardScrum.php");
-                            exit();
-                        } else if ($_SESSION['role'] == 'prodOwner') {
-                            header("Location: dashboardProd.php");
-                            exit();
-                        }
                     } else {
                         echo "<p class = 'text-red-300'>Invalid username or password.</p>";
                     }
