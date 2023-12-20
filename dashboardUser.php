@@ -6,32 +6,10 @@ include './includes/user.php';
 
 $userObj = new User();
 
-if (isset($_SESSION['email'])) {
-    $oldEmail = $_SESSION['email'];
+$oldEmail = $_SESSION['email'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $oldEmail);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $row = $result->fetch_assoc();
-    $_SESSION['id'] = $row['id'];
-    $_SESSION['image'] = $row['image'];
-    $_SESSION['firstName'] = $row['firstName'];
-    $_SESSION['lastName'] = $row['lastName'];
-    $_SESSION['email'] = $row['email'];
-    $_SESSION['phoneNum'] = $row['phoneNum'];
-    $_SESSION['role'] = $row['role'];
-    $_SESSION['equipeID'] = $row['equipeID'];
+$userObj->initSession($oldEmail);
 
-    if ($_SESSION['role'] !== 'user') {
-        header("Location: login.php");
-        exit();
-    }
-} else {
-    header("Location: login.php");
-    exit();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

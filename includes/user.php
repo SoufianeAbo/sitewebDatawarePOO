@@ -98,6 +98,9 @@ class User {
     }
 
     public function initSession($email) {
+        $currentPage = basename($_SERVER['PHP_SELF']);
+        $dashboardPages = ['dashboardUser.php', 'dashboardScrum.php', 'dashboardProd.php'];
+
         $user = $this->getUserByEmail($email);
 
         if ($user) {
@@ -109,6 +112,10 @@ class User {
             $_SESSION['phoneNum'] = $user['phoneNum'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['equipeID'] = $user['equipeID'];
+
+            if (isset($_SESSION['id']) && in_array($currentPage, $dashboardPages)) {
+                return;
+            }
 
             if ($_SESSION['role'] == 'user') {
                 header("Location: dashboardUser.php");
