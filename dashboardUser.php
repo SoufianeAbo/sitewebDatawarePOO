@@ -2,6 +2,9 @@
 session_start();
 
 include 'connection.php';
+include './includes/user.php';
+
+$userObj = new User();
 
 if (isset($_SESSION['email'])) {
     $oldEmail = $_SESSION['email'];

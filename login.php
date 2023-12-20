@@ -25,6 +25,8 @@
 
                 $userObj = new User();
 
+                $userObj->checkAuthentication();
+
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $email = $_POST["emailLog"];
                     $password = $_POST["passwordLog"];
