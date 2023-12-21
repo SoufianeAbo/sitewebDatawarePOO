@@ -28,6 +28,28 @@ class ScrumMaster extends User {
         return $users;
     }
 
+    public function addMemberToTeam($selectedTeam, $selectedMember) {
+        $updateSql = "UPDATE users SET equipeID = ? WHERE id = ?";
+
+        $stmt = $this->conn->prepare($updateSql);
+
+        if ($stmt) {
+            $stmt->bind_param("ii", $selectedTeam, $selectedMember);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                header('Location: dashboardScrum.php');
+                exit;
+            } else {
+                echo "Error updating user's team ID.";
+            }
+
+            $stmt->close();
+        } else {
+            echo "Error preparing SQL statement.";
+        }
+    }
+
     public function deleteTeam($teamId) {
         $currentMemberID = $_SESSION['id'];
 
