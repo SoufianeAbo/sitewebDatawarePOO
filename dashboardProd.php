@@ -2,32 +2,19 @@
 session_start();
 
 include 'connection.php';
-if (isset($_SESSION['email'])) {
-    $oldEmail = $_SESSION['email'];
+include './includes/user.php';
+include './includes/teams.php';
+include './includes/projects.php';
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $oldEmail);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $row = $result->fetch_assoc();
-    $_SESSION['id'] = $row['id'];
-    $_SESSION['image'] = $row['image'];
-    $_SESSION['firstName'] = $row['firstName'];
-    $_SESSION['lastName'] = $row['lastName'];
-    $_SESSION['email'] = $row['email'];
-    $_SESSION['phoneNum'] = $row['phoneNum'];
-    $_SESSION['role'] = $row['role'];
-    $_SESSION['equipeID'] = $row['equipeID'];
 
-    if ($_SESSION['role'] !== 'prodOwner') {
-        header("Location: login.php");
-        exit();
-    }
-} else {
-    header("Location: login.php");
-    exit();
-}
+$userObj = new User();
+$teamObj = new Team();
+$projectObj = new Project();
+
+$oldEmail = $_SESSION['email'];
+
+$userObj->initSession($oldEmail);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
