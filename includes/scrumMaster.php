@@ -1,6 +1,6 @@
 <?php
 include 'connection.php';
-include './includes/user.php';
+require_once './includes/user.php';
 
 class ScrumMaster extends User {
     private $conn;
@@ -11,6 +11,21 @@ class ScrumMaster extends User {
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+    }
+
+    public function getAllUsersNT() {
+        $sql = "SELECT * FROM users WHERE equipeID = 0";
+        $result = $this->conn->query($sql);
+
+        $users = array();
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+        }
+
+        return $users;
     }
 
     public function deleteTeam($teamId) {
