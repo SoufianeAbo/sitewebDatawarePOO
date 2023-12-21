@@ -326,17 +326,17 @@ $userObj->initSession($oldEmail);
 
             <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id = "MembersTable">
                 <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
+
                 <?php
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT * FROM teams WHERE scrumMasterID = $currentMemberID OR id = $equipeID";
-                    
-                    $result = $conn->query($sql);
+                    $currentMemberID = $_SESSION['id'];
+                    $teamDetails = $teamObj->getTeamByIdScrum($equipeID, $currentMemberID);
 
-                    while ($row = $result->fetch_assoc()) {
-                        $teamImg = $row['image'];
-                        $teamName = $row['teamName'];
-                        $scrumMasterID = $row['scrumMasterID'];
-                        $teamId = $row['id'];
+                    foreach ($teamDetails as $team) {
+                        $teamImg = $team['image'];
+                        $teamName = $team['teamName'];
+                        $scrumMasterID = $team['scrumMasterID'];
+                        $teamId = $team['id'];
 
                         echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
@@ -345,31 +345,16 @@ $userObj->initSession($oldEmail);
                                 </div>
                             </div>';
 
-                        $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
-                        $MembersResult = $conn->query($MembersQuery);
+                            $teamMembers = $userObj->getAllUsersFromTeam($teamId);
 
-                        while ($MembersData = $MembersResult->fetch_assoc()) {
-                            if ($MembersResult->num_rows > 0) {
-                                $MembersFirstName = $MembersData['firstName'];
-                                $MembersLastName = $MembersData['lastName'];
-                                $MembersImg = $MembersData['image'];
-                                if ($MembersData['role'] == 'user') {
-                                    $MembersRole = "User";
-                                    $MembersIcon = "fa-solid fa-user mr-2";
-                                    $MembersColor = "gray";
-                                } else if ($MembersData['role'] == 'scrumMaster') {
-                                    $MembersRole = "Scrum Master";
-                                    $MembersIcon = "fa-solid fa-user-pen pr-2";
-                                    $MembersColor = "green";
-                                } else if ($MembersData['role'] == 'prodOwner') {
-                                    $MembersRole = "Product Owner";
-                                    $MembersIcon = "fa-solid fa-user-gear pr-2";
-                                    $MembersColor = "red";
-                                }
-                            } else {
-                                $MembersFirstName = 'N/A';
-                                $MembersLastName = 'N/A';
-                            }
+                            foreach ($teamMembers as $member) {
+                                $MembersFirstName = $member['firstName'];
+                                $MembersLastName = $member['lastName'];
+                                $MembersImg = $member['image'];
+                                $MembersRole = $member['role'];
+                                $MembersColor = $userObj->getRoleColor($MembersRole);
+                                $MembersIcon = $userObj->getRoleIcon($MembersRole);
+                                $MembersRole = $userObj->getRoleName($MembersRole);
                             echo '
                                 <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow">
                                     <div class="flex flex-col items-center pb-2">
@@ -383,14 +368,14 @@ $userObj->initSession($oldEmail);
                                     </div>
                                     <div class="flex pb-2 justify-center">
                                     <form method = "POST" action = "remove.php">
-                                        <input type="hidden" name="userID" value="'. $MembersData['id'] .'">
+                                        <input type="hidden" name="userID" value="'. $member['id'] .'">
                                         <input type="submit" value = "Remove" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300" id = "removeBtn">
                                     </form>
                                     </div>
                                 </div>
                                 ';
+                                
                         }
-
                         echo '
                         <a class = "p-12 bg-green-500 rounded-full w-fit text-white cursor-pointer addBtn '. $teamName .'Add"><i class="fa-solid fa-user-plus"></i></a>
                         ';
