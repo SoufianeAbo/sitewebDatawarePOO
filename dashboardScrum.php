@@ -303,50 +303,31 @@ $userObj->initSession($oldEmail);
             <?php
                     $equipeID = $_SESSION['equipeID'];
                     $currentMemberID = $_SESSION['id'];
-                    $sql = "SELECT * FROM teams WHERE scrumMasterID = $currentMemberID";
-                    
-                    $result = $conn->query($sql);
+                    $teams = $teamObj->getTeamByIdScrum($equipeID, $currentMemberID);
 
-                    while ($row = $result->fetch_assoc()) {
-                        $teamId = $row['id'];
-                        $teamImg = $row['image'];
-                        $teamDescription = $row['description'];
-                        $teamName = $row['teamName'];
-                        $projectID = $row['projectID'];
-                        $scrumMasterID = $row['scrumMasterID'];
-
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
-                        $scrumMasterResult = $conn->query($scrumMasterQuery);
-
-                        if ($scrumMasterResult->num_rows > 0) {
-                            $scrumMasterData = $scrumMasterResult->fetch_assoc();
-                            $scrumMasterFirstName = $scrumMasterData['firstName'];
-                            $scrumMasterLastName = $scrumMasterData['lastName'];
-                            $scrumMasterImg = $scrumMasterData['image'];
-                        } else {
-                            $scrumMasterFirstName = 'N/A';
-                            $scrumMasterLastName = 'N/A';
-                        }
-                        echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow teamSelect cursor-pointer transition-all h-full" data-id="'. $teamId .'">';
+                    foreach ($teams as $team) {
+                        $scrumMasterDetails = $teamObj->getScrumMasterDetails($team['scrumMasterID']);
+            
+                        echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow teamSelect cursor-pointer transition-all h-full" data-id="'. $team['id'] .'">';
                         echo '<a href="#">';
-                        echo "<img class='rounded-t-lg' src='$teamImg' alt='' />";
+                        echo "<img class='rounded-t-lg' src='{$team['image']}' alt='' />";
                         echo '</a>';
                         echo '<div class="p-5">';
-                        echo '<div class = "flex justify-between">';
-                        echo '<a href="#" class = "flex flex-col">';
-                        echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$teamName</h5>";
-                        echo "<p class = 'mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
+                        echo '<div class="flex justify-between">';
+                        echo '<a href="#" class="flex flex-col">';
+                        echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>{$team['teamName']}</h5>";
+                        echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>{$scrumMasterDetails['firstName']} {$scrumMasterDetails['lastName']}</p>";
                         echo '</a>';
                         echo '';
-                        echo "<img src='$scrumMasterImg' alt='' class = 'w-[14%] h-[14%] rounded-full border-2 border-green-700 relative'>";
+                        echo "<img src='{$scrumMasterDetails['image']}' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-green-700 relative'>";
                         echo '</div>';
-                        echo "<p class='mb-3 font-normal text-gray-700'>$teamDescription</p>";
+                        echo "<p class='mb-3 font-normal text-gray-700'>{$team['description']}</p>";
                         echo '<div class = "flex flex-row items-center justify-between">';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
                     }
-                ?>  
+                ?>
             <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Select a member</h1>
             <?php
                     $teamMembers = $scrumObj->getAllUsersNT($teamId);
