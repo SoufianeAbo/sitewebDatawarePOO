@@ -39,6 +39,19 @@ class Team {
         return $teams;
     }
 
+    public function getTeamByIdScrum($equipeID, $currentMemberID) {
+        $sql = "SELECT * FROM teams WHERE scrumMasterID = $currentMemberID OR id = $equipeID";
+        $result = $this->conn->query($sql);
+
+        $teams = array();
+
+        while ($row = $result->fetch_assoc()) {
+            $teams[] = $row;
+        }
+
+        return $teams;
+    }
+
     public function getScrumMasterDetails($scrumMasterID) {
         $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
         $scrumMasterResult = $this->conn->query($scrumMasterQuery);
