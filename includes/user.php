@@ -115,10 +115,6 @@ class User {
         }
     }
 
-    public function __destruct() {
-        $this->conn->close();
-    }
-
     public function isValidCredentials($email, $password) {
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
