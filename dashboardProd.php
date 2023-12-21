@@ -190,45 +190,26 @@ $userObj->initSession($oldEmail);
                 <?php
                     $equipeID = $_SESSION['equipeID'];
                     $currentMemberID = $_SESSION['id'];
-                    $sql = "SELECT * FROM teams";
+                    $teams = $teamObj->getTeams(null);
+
+                    foreach ($teams as $team) {
+                        $scrumMasterDetails = $teamObj->getScrumMasterDetails($team['scrumMasterID']);
                     
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        $teamImg = $row['image'];
-                        $teamDescription = $row['description'];
-                        $teamName = $row['teamName'];
-                        $projectID = $row['projectID'];
-                        $scrumMasterID = $row['scrumMasterID'];
-
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
-                        $scrumMasterResult = $conn->query($scrumMasterQuery);
-
-                        if ($scrumMasterResult->num_rows > 0) {
-                            $scrumMasterData = $scrumMasterResult->fetch_assoc();
-                            $scrumMasterFirstName = $scrumMasterData['firstName'];
-                            $scrumMasterLastName = $scrumMasterData['lastName'];
-                            $scrumMasterImg = $scrumMasterData['image'];
-                        } else {
-                            // Handle the case where the scrum master is not found
-                            $scrumMasterFirstName = 'N/A';
-                            $scrumMasterLastName = 'N/A';
-                        }
                         echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
                         echo '<a href="#">';
-                        echo "<img class='rounded-t-lg' src='$teamImg' alt='' />";
+                        echo "<img class='rounded-t-lg' src='{$team['image']}' alt='' />";
                         echo '</a>';
                         echo '<div class="p-5">';
-                        echo '<div class = "flex justify-between">';
-                        echo '<a href="#" class = "flex flex-col">';
-                        echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900' class = 'teamNameHTML' data-id = '$teamName'>$teamName</h5>";
-                        echo "<p class = 'mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
+                        echo '<div class="flex justify-between">';
+                        echo '<a href="#" class="flex flex-col">';
+                        echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900' class='teamNameHTML' data-id='{$team['teamName']}'>{$team['teamName']}</h5>";
+                        echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>{$scrumMasterDetails['firstName']} {$scrumMasterDetails['lastName']}</p>";
                         echo '</a>';
                         echo '';
-                        echo "<img src='$scrumMasterImg' alt='' class = 'w-[14%] h-[14%] rounded-full border-2 border-green-700 relative'>";
+                        echo "<img src='{$scrumMasterDetails['image']}' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-green-700 relative'>";
                         echo '</div>';
-                        echo "<p class='mb-3 font-normal text-gray-700' class = 'teamDescHTML' data-id = '$teamDescription'>$teamDescription</p>";
-                        echo '<div class = "flex flex-row items-center justify-between">';
+                        echo "<p class='mb-3 font-normal text-gray-700' class='teamDescHTML' data-id='{$team['description']}'>{$team['description']}</p>";
+                        echo '<div class="flex flex-row items-center justify-between">';
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
