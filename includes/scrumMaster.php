@@ -90,6 +90,43 @@ class ScrumMaster extends User {
         }
     }
 
+    public function updateTeam($formName, $formDescription, $teamImage, $selectedModify) {
+        $uploadDir = './img/';
+        $uploadPath = $uploadDir . basename($teamImage['name']);
+
+        if ($teamImage['size'] > 0 && $teamImage['size'] <= 10 * 1024 * 1024 && ($teamImage['type'] === 'image/jpeg' || $teamImage['type'] === 'image/png')) {
+            list($width, $height) = getimagesize($teamImage['tmp_name']);
+            if ($width >= 1152 && $height >= 768) {
+                move_uploaded_file($teamImage['tmp_name'], $uploadPath);
+
+                $scrumMasterID = $_SESSION['id'];
+                $projectIDQuery = "SELECT id FROM projects WHERE scrumMasterID = ?";
+                $stmtProjectID = $this->conn->prepare($projectIDQuery);
+
+                $stmtProjectID->bind_param("i", $scrumMasterID);
+                $stmtProjectID->execute(); 
+
+                $stmtProjectID->bind_result($projectID);
+                $stmtProjectID->fetch();
+                $stmtProjectID->close();
+
+                $scrumMasterID = $_SESSION['id'];
+                $updateSql = "UPDATE teams SET image=?, description=?, teamName=? WHERE id=? AND scrumMasterID = ?";
+                $stmt = $this->conn->prepare($updateSql);
+                $stmt->bind_param("ssssi", $uploadPath, $formDescription, $formName, $selectedModify, $scrumMasterID);
+                $stmt->execute();
+                $stmt->close();
+
+                header('Location: dashboardScrum.php');
+                exit;
+            } else {
+                echo 'Invalid image dimensions. Please upload an image with a minimum size of 1152x768 pixels.';
+            }
+        } else {
+            echo 'Invalid file. Please upload a valid image file (JPEG or PNG) with a size less than 1MB.';
+        }
+    }
+
     public function deleteTeam($teamId) {
         $currentMemberID = $_SESSION['id'];
 

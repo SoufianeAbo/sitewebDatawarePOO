@@ -4,7 +4,7 @@ include 'connection.php';
 include './includes/scrumMaster.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $scrumMaster = new ScrumMaster($conn);
+    $scrumMaster = new ScrumMaster();
     $scrumMaster->createTeam($_POST['formName'], $_POST['formDescription'], $_FILES['teamImage']);
 }
 ?>
