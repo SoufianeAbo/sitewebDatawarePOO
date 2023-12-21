@@ -39,22 +39,6 @@ class Team {
         return $teams;
     }
 
-    public function __destruct() {
-        $this->conn->close();
-    }
-}
-
-class TeamMember {
-    private $conn;
-
-    public function __construct() {
-        $this->conn = new mysqli('localhost', 'root', '', 'datawareSite');
-
-        if ($this->conn->connect_error) {
-            die("Connection failed: " . $this->conn->connect_error);
-        }
-    }
-
     public function getScrumMasterDetails($scrumMasterID) {
         $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
         $scrumMasterResult = $this->conn->query($scrumMasterQuery);
