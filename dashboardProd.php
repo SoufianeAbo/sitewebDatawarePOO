@@ -326,77 +326,60 @@ $userObj->initSession($oldEmail);
             <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id = "MembersTable">
                 <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
                 <?php
-                    $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT * FROM teams";
-                    
-                    $result = $conn->query($sql);
+                  $teams = $teamObj->getTeams('');
 
-                    while ($row = $result->fetch_assoc()) {
-                        $teamImg = $row['image'];
-                        $teamName = $row['teamName'];
-                        $scrumMasterID = $row['scrumMasterID'];
-                        $teamId = $row['id'];
-
-                        echo '
-                            <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
-                                <div class = "w-full h-fit bg-gray-800 py-2 rounded-t">
-                                    <p class = "text-white text-center">' . $teamName . '</p>
-                                </div>
-                            </div>';
-
-                        $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
-                        $MembersResult = $conn->query($MembersQuery);
-
-                        while ($MembersData = $MembersResult->fetch_assoc()) {
-                            if ($MembersResult->num_rows > 0) {
-                                $MembersFirstName = $MembersData['firstName'];
-                                $MembersLastName = $MembersData['lastName'];
-                                $MembersID = $MembersData['id'];
-                                $MembersImg = $MembersData['image'];
-                                if ($MembersData['role'] == 'user') {
-                                    $MembersRole = "User";
-                                    $MembersIcon = "fa-solid fa-user mr-2";
-                                    $MembersColor = "gray";
-                                } else if ($MembersData['role'] == 'scrumMaster') {
-                                    $MembersRole = "Scrum Master";
-                                    $MembersIcon = "fa-solid fa-user-pen pr-2";
-                                    $MembersColor = "green";
-                                } else if ($MembersData['role'] == 'prodOwner') {
-                                    $MembersRole = "Product Owner";
-                                    $MembersIcon = "fa-solid fa-user-gear pr-2";
-                                    $MembersColor = "red";
-                                }
-                            } else {
-                                $MembersFirstName = 'N/A';
-                                $MembersLastName = 'N/A';
-                            }
-                            echo '<div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow">';
-                            echo '    <div class="flex flex-col items-center pb-2">';
-                            echo '        <div class="flex flex-row justify-between px-2 py-2 mb-2 bg-gray-800 rounded-t border border-gray-100">';
-                            echo '            <p class="text-white font-bold"><i class="fa-solid fa-flag mr-2"></i>' . $teamName . '</p>';
-                            echo '            <img src="' . $teamImg . '" alt="" class="rounded-full h-1/6 w-1/6">';
-                            echo '        </div>';
-                            echo '        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>';
-                            echo '        <h5 class="mb-1 text-xl font-medium text-' . $MembersColor . '-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>';
-                            echo '        <span class="text-sm text-' . $MembersColor . '-500"><i class="' . $MembersIcon . '"></i>' . $MembersRole . '</span>';
-                            echo '        <form method="POST" action="changeUser.php" class = "mt-2">';
-                            echo '            <input type="hidden" name="userId" value='. $MembersID .'>';
-                            echo '            <select id="dropdownRole" name="dropdownRole" class = "border-blue-500 border-2 p-2 rounded" onchange="this.form.submit()">';
-                            echo '                <option value="scrumMaster" disabled selected>' . $MembersRole . '</option>';
-                                    if ($MembersRole === "User") {
-                                        echo '                <option value="scrumMaster">Scrum Master</option>';
-                                    } else if ($MembersRole === "Scrum Master") {
-                                        echo '                <option value="user">User</option>';
-                                    }
-                            echo '            </select>';
-                            echo '        </form>';
-                            echo '    </div>';
-                            echo '    <div class="flex pb-2 justify-center">';
-                            echo '    </div>';
-                            echo '</div>';
-                        }
-                    }
-
+                  foreach ($teams as $row) {
+                      $teamId = $row['id'];
+                      $teamName = $row['teamName'];
+                      $teamImg = $row['image'];
+                  
+                      echo '
+                          <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style="background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
+                              <div class="w-full h-fit bg-gray-800 py-2 rounded-t">
+                                  <p class="text-white text-center">' . $teamName . '</p>
+                              </div>
+                          </div>';
+                  
+                      $members = $userObj->getAllUsersFromTeam($teamId);
+                  
+                      foreach ($members as $MembersData) {
+                          if (!empty($members)) {
+                              $MembersFirstName = $MembersData['firstName'];
+                              $MembersLastName = $MembersData['lastName'];
+                              $MembersID = $MembersData['id'];
+                              $MembersImg = $MembersData['image'];
+                              $MembersRole = $MembersData['role'];
+                  
+                              echo '<div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow">';
+                              echo '    <div class="flex flex-col items-center pb-2">';
+                              echo '        <div class="flex flex-row justify-between px-2 py-2 mb-2 bg-gray-800 rounded-t border border-gray-100">';
+                              echo '            <p class="text-white font-bold"><i class="fa-solid fa-flag mr-2"></i>' . $teamName . '</p>';
+                              echo '            <img src="' . $teamImg . '" alt="" class="rounded-full h-1/6 w-1/6">';
+                              echo '        </div>';
+                              echo '        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>';
+                              echo '        <h5 class="mb-1 text-xl font-medium text-gray-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>';
+                              echo '        <span class="text-sm text-gray-500"><i class="fa-solid fa-user mr-2"></i>' . $MembersRole . '</span>';
+                              echo '        <form method="POST" action="changeUser.php" class="mt-2">';
+                              echo '            <input type="hidden" name="userId" value=' . $MembersID . '>';
+                              echo '            <select id="dropdownRole" name="dropdownRole" class="border-blue-500 border-2 p-2 rounded" onchange="this.form.submit()">';
+                              echo '                <option value="' . $MembersRole . '" disabled selected>' . $MembersRole . '</option>';
+                              if ($MembersRole === "user") {
+                                  echo '                <option value="scrumMaster">Scrum Master</option>';
+                              } else if ($MembersRole === "scrumMaster") {
+                                  echo '                <option value="user">User</option>';
+                              }
+                              echo '            </select>';
+                              echo '        </form>';
+                              echo '    </div>';
+                              echo '    <div class="flex pb-2 justify-center">';
+                              echo '    </div>';
+                              echo '</div>';
+                          } else {
+                              $MembersFirstName = 'N/A';
+                              $MembersLastName = 'N/A';
+                          }
+                      }
+                  }
                 ?>
 
             </main>
