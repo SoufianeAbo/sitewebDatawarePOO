@@ -196,6 +196,64 @@ class User {
             return;
         }
     }
+
+    public function registerUser($firstName, $lastName, $email, $phoneNumber, $password, $teamImage) {
+        $uploadDir = './img/';
+        $uploadPath = $uploadDir . basename($teamImage['name']);
+        $role = "user";
+
+        move_uploaded_file($teamImage['tmp_name'], $uploadPath);
+
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            header("Location: login.php?exist");
+        } else {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmt = $this->conn->prepare("INSERT INTO users (image, firstName, lastName, email, phoneNum, pass, role, equipeID) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+            $stmt->bind_param("sssssss", $uploadPath, $firstName, $lastName, $email, $phoneNumber, $hashedPassword, $role);
+            $stmt->execute();
+
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+
+                if (password_verify($password, $row['pass'])) {
+                    $_SESSION['id'] = $row['id'];
+                    $_SESSION['image'] = $row['image'];
+                    $_SESSION['firstName'] = $row['firstName'];
+                    $_SESSION['lastName'] = $row['lastName'];
+                    $_SESSION['email'] = $row['email'];
+                    $_SESSION['phoneNum'] = $row['phoneNum'];
+                    $_SESSION['role'] = $row['role'];
+                    $_SESSION['equipeID'] = $row['equipeID'];
+
+                    if ($_SESSION['role'] == 'user') {
+                        header("Location: dashboardUser.php");
+                        exit();
+                    } else if ($_SESSION['role'] == 'scrumMaster') {
+                        header("Location: dashboardScrum.php");
+                        exit();
+                    } else if ($_SESSION['role'] == 'prodOwner') {
+                        header("Location: dashboardProd.php");
+                        exit();
+                    }
+                } else {
+                    echo "<p class='text-red-300'>Invalid username or password.</p>";
+                }
+            } else {
+                echo "<p class='text-red-300'>Registration failed.</p>";
+            }
+        }
+    }
 }
 
 $userObj = new User();
