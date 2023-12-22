@@ -173,4 +173,41 @@ class ProdOwner extends User {
             echo 'Invalid file. Please upload a valid image file (JPEG or PNG) with a size less than 1MB.';
         }
     }
+
+    public function deleteProject($projectId) {
+        $updateTeamsQuery = "UPDATE teams SET projectID = 0 WHERE projectID = ?";
+        $stmtUpdateTeams = $this->conn->prepare($updateTeamsQuery);
+
+        if ($stmtUpdateTeams) {
+            $stmtUpdateTeams->bind_param("i", $projectId);
+            $stmtUpdateTeams->execute();
+
+            if ($stmtUpdateTeams->affected_rows >= 0) {
+                $deleteProjectQuery = "DELETE FROM projects WHERE id = ?";
+                $stmtDeleteProject = $this->conn->prepare($deleteProjectQuery);
+
+                if ($stmtDeleteProject) {
+                    $stmtDeleteProject->bind_param("i", $projectId);
+                    $stmtDeleteProject->execute();
+
+                    if ($stmtDeleteProject->affected_rows > 0) {
+                        header("Location: dashboardProd.php");
+                        exit;
+                    } else {
+                        echo "Error deleting project: " . $stmtDeleteProject->error;
+                    }
+
+                    $stmtDeleteProject->close();
+                } else {
+                    echo "Error preparing SQL statement for deleting project.";
+                }
+            } else {
+                echo "Error updating team records: " . $stmtUpdateTeams->error;
+            }
+
+            $stmtUpdateTeams->close();
+        } else {
+            echo "Error preparing SQL statement for updating teams.";
+        }
+    }
 }
