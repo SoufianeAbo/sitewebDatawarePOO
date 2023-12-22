@@ -56,4 +56,44 @@ class ProdOwner extends User {
 
         return $members;
     }
+
+    public function assignScrumMasterToProject($selectedTeam, $selectedMember) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $updateProjectSql = "UPDATE projects SET scrumMasterID = ? WHERE id = ?";
+            $stmtProject = $this->conn->prepare($updateProjectSql);
+
+            if ($stmtProject) {
+                $stmtProject->bind_param("ii", $selectedMember, $selectedTeam);
+                $stmtProject->execute();
+
+                if ($stmtProject->affected_rows > 0) {
+                    $updateTeamsSql = "UPDATE teams SET projectID = ? WHERE scrumMasterID = ?";
+                    $stmtTeams = $this->conn->prepare($updateTeamsSql);
+
+                    if ($stmtTeams) {
+                        $stmtTeams->bind_param("ii", $selectedTeam, $selectedMember);
+                        $stmtTeams->execute();
+
+                        if ($stmtTeams->affected_rows > 0) {
+                            header('Location: dashboardProd.php');
+                            exit;
+                        } else {
+                            echo "Error updating projectID for teams.";
+                        }
+                        $stmtTeams->close();
+                    } else {
+                        echo "Error preparing SQL statement for updating teams.";
+                    }
+                } else {
+                    echo "Error updating user's team ID.";
+                }
+
+                $stmtProject->close();
+            } else {
+                echo "Error preparing SQL statement for updating the project.";
+            }
+        } else {
+            echo "Error: This script should be accessed via a POST request.";
+        }
+    }
 }
