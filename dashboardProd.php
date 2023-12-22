@@ -223,105 +223,10 @@ $userObj->initSession($oldEmail);
 
                 <?php
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                   $currentMemberID = $_SESSION['id'];
 
-                    $result = $conn->query($sql);
-
-                    while ($row = $result->fetch_assoc()) {
-                        $projectID = $row['projectID'];
-                        $currentMemberID = $_SESSION['id'];
-
-                        $projectsQuery = "SELECT * FROM projects WHERE productOwnerID = $currentMemberID";
-                        $projectsResult = $conn->query($projectsQuery);
-
-                        if ($projectsResult->num_rows > 0) {
-                            while ($projectsData = $projectsResult->fetch_assoc()) {
-                                $projectsImg = $projectsData['image'];
-                                $projectsName = $projectsData['name'];
-                                $projectsDesc = $projectsData['description'];
-                                $projectsScrum = $projectsData['scrumMasterID'];
-                                $projectsProd = $projectsData['productOwnerID'];
-                                $projectsDateStart = $projectsData['date_start'];
-                                $projectsDateEnd = $projectsData['date_end'];
-                                $projectsStatus = $projectsData['statut'];
-
-                                $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
-                                $scrumMasterResult = $conn->query($scrumMasterQuery);
-
-                                if ($scrumMasterResult->num_rows > 0) {
-                                    $scrumMasterData = $scrumMasterResult->fetch_assoc();
-                                    $scrumMasterFirstName = $scrumMasterData['firstName'];
-                                    $scrumMasterLastName = $scrumMasterData['lastName'];
-                                    $scrumMasterImg = $scrumMasterData['image'];
-                                } else {
-                                    $scrumMasterFirstName = 'No current';
-                                    $scrumMasterLastName = 'scrum master.';
-                                }
-
-                                $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
-                                $prodMasterResult = $conn->query($prodMasterQuery);
-
-                                if ($prodMasterResult->num_rows > 0) {
-                                    $prodMasterData = $prodMasterResult->fetch_assoc();
-                                    $prodMasterFirstName = $prodMasterData['firstName'];
-                                    $prodMasterLastName = $prodMasterData['lastName'];
-                                    $prodMasterImg = $prodMasterData['image'];
-                                } else {
-                                    $prodMasterFirstName = 'N/A';
-                                    $prodMasterLastName = 'N/A';
-                                }
-
-                                echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
-                                echo '<a href="#">';
-                                echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
-                                echo '</a>';
-                                echo '<div class="p-5">';
-                                echo '<div class="flex justify-between">';
-                                echo '<a href="#" class="flex flex-col">';
-                                echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
-                                echo "<p class='text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
-                                echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
-                                echo '</a>';
-                                echo '';
-                                echo "<img src='$prodMasterImg' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
-                                echo '</div>';
-                                echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
-                                echo '<div class="flex flex-row items-center justify-between">';
-                                echo '<div class = "flex flex-col gap-2">';
-                                echo '<div class = "flex flex-row gap-2">';
-                                echo '<div>';
-                                echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
-                                echo '<i class="fa-solid fa-user-pen mr-2"></i>Assign';
-                                echo '</a>';
-                                echo '</div>';
-                                echo '<div>';
-                                echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 modifyBtn" data-id="'. $projectsData['id'] .'">';
-                                echo '<i class="fa-solid fa-gear mr-2"></i>Modify';
-                                echo '</a>';
-                                echo '</div>';
-                                echo '</div>';
-                                echo '<div>';
-                                echo '<a href="deleteProject.php?id='. $projectsData['id'] .'" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 addBtn">';
-                                echo '<i class="fa-solid fa-trash mr-2"></i>Delete';
-                                echo '</a>';
-                                echo '</div>';
-                                echo '</div>';
-                                echo '<div class="flex flex-col items-center">';
-                                echo "<p class='text-gray-500'>$projectsDateStart</p>";
-                                echo "<p class='text-gray-500'>$projectsDateEnd</p>";
-                                if ($projectsStatus == 'Active') {
-                                    echo '<p class="text-green-500">Active</p>';
-                                }
-                                echo '</div>';
-                                echo '</div>';
-                                echo '</div>';
-                                echo '</div>';
-                            }
-                        } else {
-
-                        }
-                    }
-                    ?>
+                   $projectObj->displayUserProjects($equipeID, $currentMemberID);
+                ?>
             </main>
 
             <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id = "MembersTable">

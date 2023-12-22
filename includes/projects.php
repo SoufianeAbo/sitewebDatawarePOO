@@ -91,10 +91,34 @@ class Project
 
                 $this->displayProjectCard($projectDetails, $scrumMasterDetails, $prodMasterDetails);
             } else {
-                // Handle case when project details are empty
+
             }
         }
     }
+
+    public function displayUserProjects($equipeID, $currentMemberID)
+    {
+        $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+        $result = $this->conn->query($sql);
+    
+        while ($row = $result->fetch_assoc()) {
+            $projectsQuery = "SELECT * FROM projects WHERE productOwnerID = $currentMemberID";
+            $projectsResult = $this->conn->query($projectsQuery);
+    
+            if ($projectsResult->num_rows > 0) {
+                while ($projectsData = $projectsResult->fetch_assoc()) {
+                    // Fetch details for the current project
+                    $scrumMasterDetails = $this->getScrumMasterDetails($projectsData['scrumMasterID']);
+                    $prodMasterDetails = $this->getProdOwnerDetails($projectsData['productOwnerID']);
+    
+                    $this->displayProjectCard($projectsData, $scrumMasterDetails, $prodMasterDetails);
+                }
+            } else {
+                // Handle the case when there are no projects
+            }
+        }
+    }    
+
 
     private function displayProjectCard($projectDetails, $scrumMasterDetails, $prodMasterDetails)
     {
@@ -114,13 +138,24 @@ class Project
         echo '</div>';
         echo "<p class='mb-3 font-normal text-gray-700'>{$projectDetails['description']}</p>";
         echo '<div class="flex flex-row items-center justify-between">';
+        echo '<div class = "flex flex-col gap-2">';
+        echo '<div class = "flex flex-row gap-2">';
         echo '<div>';
-        echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
-        echo 'More details';
-        echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
-        echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
+        echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
+        echo '<i class="fa-solid fa-user-pen mr-2"></i>Assign';
         echo '</a>';
-        echo '</svg>';
+        echo '</div>';
+        echo '<div>';
+        echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 modifyBtn" data-id="'. $projectDetails['id'] .'">';
+        echo '<i class="fa-solid fa-gear mr-2"></i>Modify';
+        echo '</a>';
+        echo '</div>';
+        echo '</div>';
+        echo '<div>';
+        echo '<a href="deleteProject.php?id='. $projectDetails['id'] .'" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 addBtn">';
+        echo '<i class="fa-solid fa-trash mr-2"></i>Delete';
+        echo '</a>';
+        echo '</div>';
         echo '</div>';
         echo '<div class="flex flex-col items-center">';
         echo "<p class='text-gray-500'>{$projectDetails['date_start']}</p>";
