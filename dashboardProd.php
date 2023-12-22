@@ -357,12 +357,12 @@ $userObj->initSession($oldEmail);
                               echo '            <img src="' . $teamImg . '" alt="" class="rounded-full h-1/6 w-1/6">';
                               echo '        </div>';
                               echo '        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>';
-                              echo '        <h5 class="mb-1 text-xl font-medium text-gray-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>';
-                              echo '        <span class="text-sm text-gray-500"><i class="fa-solid fa-user mr-2"></i>' . $MembersRole . '</span>';
+                              echo '        <h5 class="mb-1 text-xl font-medium text-' . $userObj->getRoleColor($MembersRole) . '-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>';
+                              echo '        <span class="text-sm text-' . $userObj->getRoleColor($MembersRole) . '-500"><i class="' . $userObj->getRoleIcon($MembersRole) . '"></i>' . $userObj->getRoleName($MembersRole) . '</span>';
                               echo '        <form method="POST" action="changeUser.php" class="mt-2">';
                               echo '            <input type="hidden" name="userId" value=' . $MembersID . '>';
                               echo '            <select id="dropdownRole" name="dropdownRole" class="border-blue-500 border-2 p-2 rounded" onchange="this.form.submit()">';
-                              echo '                <option value="' . $MembersRole . '" disabled selected>' . $MembersRole . '</option>';
+                              echo '                <option value="' . $userObj->getRoleName($MembersRole) . '" disabled selected>' . $userObj->getRoleName($MembersRole) . '</option>';
                               if ($MembersRole === "user") {
                                   echo '                <option value="scrumMaster">Scrum Master</option>';
                               } else if ($MembersRole === "scrumMaster") {
