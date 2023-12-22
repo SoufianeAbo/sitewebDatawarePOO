@@ -36,4 +36,24 @@ class ProdOwner extends User {
             exit();
         }
     }
+
+    public function getScrumMasters() {
+        $query = "SELECT * FROM users u
+                    WHERE u.role = 'scrumMaster'
+                    AND u.id NOT IN (
+                        SELECT scrumMasterID FROM projects
+                        WHERE scrumMasterID IS NOT NULL
+                    )";
+
+        $result = $this->conn->query($query);
+        $members = array();
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $members[] = $row;
+            }
+        }
+
+        return $members;
+    }
 }

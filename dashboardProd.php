@@ -10,6 +10,7 @@ require_once './includes/prodOwner.php';
 
 $userObj = new User();
 $teamObj = new Team();
+$prodObj = new ProdOwner();
 $projectObj = new Project();
 
 $oldEmail = $_SESSION['email'];
@@ -303,48 +304,19 @@ $userObj->initSession($oldEmail);
             ?>  
             <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Select a member</h1>
                 <?php
-                    $equipeID = $_SESSION['equipeID'];
-                    $MembersQuery = "SELECT * FROM users u
-                    WHERE u.role = 'scrumMaster'
-                    AND u.id NOT IN (
-                        SELECT scrumMasterID FROM projects
-                        WHERE scrumMasterID IS NOT NULL
-                    )";
+                   $membersData = $prodObj->getScrumMasters();
 
-                    $MembersResult = $conn->query($MembersQuery);
-
-                    while ($MembersData = $MembersResult->fetch_assoc()) {
-                        if ($MembersResult->num_rows > 0) {
-                            $MembersFirstName = $MembersData['firstName'];
-                            $MembersLastName = $MembersData['lastName'];
-                            $MembersImg = $MembersData['image'];
-                            if ($MembersData['role'] == 'user') {
-                                $MembersRole = "User";
-                                $MembersIcon = "fa-solid fa-user mr-2";
-                                $MembersColor = "gray";
-                            } else if ($MembersData['role'] == 'scrumMaster') {
-                                $MembersRole = "Scrum Master";
-                                $MembersIcon = "fa-solid fa-user-pen pr-2";
-                                $MembersColor = "green";
-                            } else if ($MembersData['role'] == 'prodOwner') {
-                                $MembersRole = "Product Owner";
-                                $MembersIcon = "fa-solid fa-user-gear pr-2";
-                                $MembersColor = "red";
-                            }
-                        } else {
-                            $MembersFirstName = 'N/A';
-                            $MembersLastName = 'N/A';
-                        }
-                        echo '
-                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id'] .'">
-                                <div class="flex flex-col items-center py-2">
-                                    <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>
-                                    <h5 class="mb-1 text-xl font-medium text-'. $MembersColor .'-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>
-                                    <span class="text-sm text-'. $MembersColor .'-500"><i class="'. $MembersIcon .'"></i>'. $MembersRole .'</span>
-                                </div>
-                            </div>
-                            ';
-                    }
+                   foreach ($membersData as $member) {
+                       echo '
+                           <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="' . $member['id'] . '">
+                               <div class="flex flex-col items-center py-2">
+                                   <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $member['image'] . '" alt="' . $member['firstName'] . ' ' . $member['lastName'] . '"/>
+                                   <h5 class="mb-1 text-xl font-medium text-gray-900">' . $member['firstName'] . ' ' . $member['lastName'] . '</h5>
+                                   <span class="text-sm text-green-500"><i class="' . $userObj->getRoleIcon($member['role']) . '"></i>' . $userObj->getRoleName($member['role']) . '</span>
+                               </div>
+                           </div>
+                       ';
+                   }
                 ?>
                 <div class = "lg:col-span-5 md:col-span-3 col-span-1">
                 <input type="hidden" name="selectedTeam" id="selectedTeam" value="">
