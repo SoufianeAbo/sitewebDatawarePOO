@@ -96,7 +96,7 @@ class Project
         }
     }
 
-    public function displayUserProjects($equipeID, $currentMemberID)
+    public function displayUserProjects($equipeID, $currentMemberID, $function = null)
     {
         $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
         $result = $this->conn->query($sql);
@@ -107,22 +107,25 @@ class Project
     
             if ($projectsResult->num_rows > 0) {
                 while ($projectsData = $projectsResult->fetch_assoc()) {
-                    // Fetch details for the current project
                     $scrumMasterDetails = $this->getScrumMasterDetails($projectsData['scrumMasterID']);
                     $prodMasterDetails = $this->getProdOwnerDetails($projectsData['productOwnerID']);
     
-                    $this->displayProjectCard($projectsData, $scrumMasterDetails, $prodMasterDetails);
+                    $this->displayProjectCard($projectsData, $scrumMasterDetails, $prodMasterDetails, $function);
                 }
             } else {
-                // Handle the case when there are no projects
+
             }
         }
     }    
 
 
-    private function displayProjectCard($projectDetails, $scrumMasterDetails, $prodMasterDetails)
+    private function displayProjectCard($projectDetails, $scrumMasterDetails, $prodMasterDetails, $function = null)
     {
-        echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
+        if ($function == 1) {
+            echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow teamSelect transition-all" data-id="'. $projectDetails['id'] .'">';
+        } else {
+            echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
+        }
         echo '<a href="#">';
         echo "<img class='rounded-t-lg' src='{$projectDetails['image']}' alt='' />";
         echo '</a>';
@@ -138,34 +141,48 @@ class Project
         echo '</div>';
         echo "<p class='mb-3 font-normal text-gray-700'>{$projectDetails['description']}</p>";
         echo '<div class="flex flex-row items-center justify-between">';
-        echo '<div class = "flex flex-col gap-2">';
-        echo '<div class = "flex flex-row gap-2">';
-        echo '<div>';
-        echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
-        echo '<i class="fa-solid fa-user-pen mr-2"></i>Assign';
-        echo '</a>';
-        echo '</div>';
-        echo '<div>';
-        echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 modifyBtn" data-id="'. $projectDetails['id'] .'">';
-        echo '<i class="fa-solid fa-gear mr-2"></i>Modify';
-        echo '</a>';
-        echo '</div>';
-        echo '</div>';
-        echo '<div>';
-        echo '<a href="deleteProject.php?id='. $projectDetails['id'] .'" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 addBtn">';
-        echo '<i class="fa-solid fa-trash mr-2"></i>Delete';
-        echo '</a>';
-        echo '</div>';
-        echo '</div>';
-        echo '<div class="flex flex-col items-center">';
-        echo "<p class='text-gray-500'>{$projectDetails['date_start']}</p>";
-        echo "<p class='text-gray-500'>{$projectDetails['date_end']}</p>";
-        if ($projectDetails['statut'] == 'Active') {
-            echo '<p class="text-green-500">Active</p>';
+        if ($function == 0) {
+            if ($_SESSION['role'] == 'prodOwner') {
+                echo '<div class = "flex flex-col gap-2">';
+                echo '<div class = "flex flex-row gap-2">';
+                echo '<div>';
+                echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
+                echo '<i class="fa-solid fa-user-pen mr-2"></i>Assign';
+                echo '</a>';
+                echo '</div>';
+                echo '<div>';
+                echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 modifyBtn" data-id="'. $projectDetails['id'] .'">';
+                echo '<i class="fa-solid fa-gear mr-2"></i>Modify';
+                echo '</a>';
+                echo '</div>';
+                echo '</div>';
+                echo '<div>';
+                echo '<a href="deleteProject.php?id='. $projectDetails['id'] .'" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 addBtn">';
+                echo '<i class="fa-solid fa-trash mr-2"></i>Delete';
+                echo '</a>';
+                echo '</div>';
+                echo '</div>';
+            } else {
+                echo '<div>';
+                echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
+                echo '<i class="fa-solid fa-user-pen mr-2"></i>More details';
+                echo '</a>';
+                echo '</div>';
+            }
+            echo '<div class="flex flex-col items-center">';
+            echo "<p class='text-gray-500'>{$projectDetails['date_start']}</p>";
+            echo "<p class='text-gray-500'>{$projectDetails['date_end']}</p>";
+            if ($projectDetails['statut'] == 'Active') {
+                echo '<p class="text-green-500">Active</p>';
+            }
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+        } else {
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
         }
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
     }
 }
 ?>
