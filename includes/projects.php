@@ -178,6 +178,7 @@ class Project
             echo '</div>';
             echo '</div>';
             echo '</div>';
+            echo '</div>';
         } else {
             echo '</div>';
             echo '</div>';
