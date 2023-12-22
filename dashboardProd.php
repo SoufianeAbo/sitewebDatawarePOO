@@ -2,9 +2,10 @@
 session_start();
 
 include 'connection.php';
-include './includes/user.php';
-include './includes/teams.php';
-include './includes/projects.php';
+require_once './includes/user.php';
+require_once './includes/teams.php';
+require_once './includes/projects.php';
+require_once './includes/prodOwner.php';
 
 
 $userObj = new User();
