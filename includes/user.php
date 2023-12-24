@@ -3,13 +3,96 @@ include 'connection.php';
 
 class User {
     private $conn;
+    private $id;
+    private $image;
+    private $firstName;
+    private $lastName;
+    private $email;
+    private $pass;
+    private $phoneNum;
+    private $role;
+    private $equipeID;
 
-    public function __construct() {
+    public function __construct($image, $firstName, $lastName, $email, $pass, $phoneNum, $role, $equipeID) {
         $this->conn = new mysqli('localhost', 'root', '', 'datawareSite');
 
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+    }
+
+    // getters
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getImage() {
+        return $this->image;
+    }
+
+    public function getFirstName() {
+        return $this->firstName;
+    }
+
+    public function getLastName() {
+        return $this->lastName;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+
+    public function getPass() {
+        return $this->pass;
+    }
+
+    public function getPhoneNum() {
+        return $this->phoneNum;
+    }
+
+    public function getRole() {
+        return $this->role;
+    }
+
+    public function getEquipeID() {
+        return $this->equipeID;
+    }
+
+    // setters
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    public function setImage($image) {
+        $this->image = $image;
+    }
+
+    public function setFirstName($firstName) {
+        $this->firstName = $firstName;
+    }
+
+    public function setLastName($lastName) {
+        $this->lastName = $lastName;
+    }
+
+    public function setEmail($email) {
+        $this->email = $email;
+    }
+
+    public function setPass($pass) {
+        $this->pass = $pass;
+    }
+
+    public function setPhoneNum($phoneNum) {
+        $this->phoneNum = $phoneNum;
+    }
+
+    public function setRole($role) {
+        $this->role = $role;
+    }
+
+    public function setEquipeID($equipeID) {
+        $this->equipeID = $equipeID;
     }
 
     public function getAllUsers() {
@@ -115,8 +198,8 @@ class User {
         }
     }
 
-    public function isValidCredentials($email, $password) {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+    public static function isValidCredentials($conn, $email, $password) {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -130,8 +213,8 @@ class User {
         return false;
     }
 
-    public function getUserByEmail($email) {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+    public static function getUserByEmail($conn, $email) {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -144,11 +227,11 @@ class User {
         }
     }
 
-    public function initSession($email) {
+    public static function initSession($conn, $email) {
         $currentPage = basename($_SERVER['PHP_SELF']);
         $dashboardPages = ['dashboardUser.php', 'dashboardScrum.php', 'dashboardProd.php'];
 
-        $user = $this->getUserByEmail($email);
+        $user = User::getUserByEmail($conn, $email);
 
         if ($user) {
             $_SESSION['id'] = $user['id'];
@@ -180,7 +263,7 @@ class User {
         }
     }
 
-    public function checkAuthentication() {
+    public static function checkAuthentication() {
         if (isset($_SESSION['id'])) {
             if ($_SESSION['role'] == 'user') {
                 header("Location: dashboardUser.php");
@@ -197,7 +280,14 @@ class User {
         }
     }
 
-    public function registerUser($firstName, $lastName, $email, $phoneNumber, $password, $teamImage) {
+    public function registerUser() {
+        $firstName = $this->getFirstName();
+        $lastName = $this->getLastName();
+        $email = $this->getEmail();
+        $phoneNumber = $this->getPhoneNum();
+        $password = $this->getPass();
+        $teamImage = $this->getImage();
+
         $uploadDir = './img/';
         $uploadPath = $uploadDir . basename($teamImage['name']);
         $role = "user";
@@ -255,9 +345,4 @@ class User {
         }
     }
 }
-
-$userObj = new User();
-
-$userId = 1;
-$singleUser = $userObj->getUser($userId);
 ?>

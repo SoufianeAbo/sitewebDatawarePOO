@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
     $teamImage = $_FILES['teamImage'];
 
-    $userObj = new User();
-    $userObj->registerUser($firstName, $lastName, $email, $phoneNumber, $password, $teamImage);
+    $userObj = new User($teamImage, $firstName, $lastName, $email, $password, $phoneNumber, 'user', 0);
+    $userObj->registerUser();
 }
 ?>

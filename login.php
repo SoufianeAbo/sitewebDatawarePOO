@@ -23,16 +23,14 @@
                 include 'connection.php';
                 include './includes/user.php';
 
-                $userObj = new User();
-
-                $userObj->checkAuthentication();
+                User::checkAuthentication();
 
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $email = $_POST["emailLog"];
                     $password = $_POST["passwordLog"];
 
-                    if ($userObj->isValidCredentials($email, $password)) {
-                        $userObj->initSession($email);
+                    if (User::isValidCredentials($conn, $email, $password)) {
+                        User::initSession($conn, $email);
                     } else {
                         echo "<p class = 'text-red-300'>Invalid username or password.</p>";
                     }
