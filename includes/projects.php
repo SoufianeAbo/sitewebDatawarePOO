@@ -4,6 +4,15 @@ include 'connection.php';
 class Project
 {
     private $conn;
+    private $id;
+    private $name;
+    private $image;
+    private $description;
+    private $scrumMasterID;
+    private $productOwnerID;
+    private $date_start;
+    private $date_end;
+    private $status;
 
     public function __construct()
     {
@@ -12,6 +21,98 @@ class Project
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+    }
+
+    // Getters
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function getScrumMasterID()
+    {
+        return $this->scrumMasterID;
+    }
+
+    public function getProductOwnerID()
+    {
+        return $this->productOwnerID;
+    }
+
+    public function getDateStart()
+    {
+        return $this->date_start;
+    }
+
+    public function getDateEnd()
+    {
+        return $this->date_end;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    // Setters
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setImage($image)
+    {
+        $this->image = $image;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function setScrumMasterID($scrumMasterID)
+    {
+        $this->scrumMasterID = $scrumMasterID;
+    }
+
+    public function setProductOwnerID($productOwnerID)
+    {
+        $this->productOwnerID = $productOwnerID;
+    }
+
+    public function setDateStart($date_start)
+    {
+        $this->date_start = $date_start;
+    }
+
+    public function setDateEnd($date_end)
+    {
+        $this->date_end = $date_end;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 
     public function getProjectDetailsByTeamId($teamId)

@@ -8,10 +8,8 @@ include './includes/projects.php';
 
 $oldEmail = $_SESSION['email'];
 
-$userObj->initSession($conn, $oldEmail);
-
+User::initSession($conn, $oldEmail);
 $userObj = new User($_SESSION['image'], $_SESSION['firstName'], $_SESSION['lastName'], $_SESSION['email'], $_SESSION['password'], $_SESSION['phoneNum'], $_SESSION['role'], $_SESSION['equipeID']);
-$userObj->initSession($conn, $oldEmail);
 $teamObj = new Team();
 $projectObj = new Project();
 

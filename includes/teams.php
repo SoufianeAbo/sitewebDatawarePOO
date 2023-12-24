@@ -3,6 +3,9 @@ include 'connection.php';
 
 class Team {
     private $conn;
+    private $id;
+    private $name;
+    private $scrumMasterID;
 
     public function __construct() {
         $this->conn = new mysqli('localhost', 'root', '', 'datawareSite');
@@ -10,6 +13,32 @@ class Team {
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+    }
+
+    // Getters
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getScrumMasterID() {
+        return $this->scrumMasterID;
+    }
+
+    // Setters
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    public function setName($name) {
+        $this->name = $name;
+    }
+
+    public function setScrumMasterID($scrumMasterID) {
+        $this->scrumMasterID = $scrumMasterID;
     }
 
     public function getTeamDetailsBySession() {
@@ -20,7 +49,11 @@ class Team {
         $teams = array();
 
         while ($row = $result->fetch_assoc()) {
-            $teams[] = $row;
+            $team = new Team();
+            $team->setId($row['id']);
+            $team->setName($row['name']);
+            $team->setScrumMasterID($row['scrumMasterID']);
+            $teams[] = $team;
         }
 
         return $teams;
@@ -33,7 +66,11 @@ class Team {
         $teams = array();
 
         while ($row = $result->fetch_assoc()) {
-            $teams[] = $row;
+            $team = new Team();
+            $team->setId($row['id']);
+            $team->setName($row['name']);
+            $team->setScrumMasterID($row['scrumMasterID']);
+            $teams[] = $team;
         }
 
         return $teams;
@@ -46,7 +83,11 @@ class Team {
         $teams = array();
 
         while ($row = $result->fetch_assoc()) {
-            $teams[] = $row;
+            $team = new Team();
+            $team->setId($row['id']);
+            $team->setName($row['name']);
+            $team->setScrumMasterID($row['scrumMasterID']);
+            $teams[] = $team;
         }
 
         return $teams;
@@ -78,7 +119,11 @@ class Team {
         $teams = array();
 
         while ($row = $result->fetch_assoc()) {
-            $teams[] = $row;
+            $team = new Team();
+            $team->setId($row['id']);
+            $team->setName($row['name']);
+            $team->setScrumMasterID($row['scrumMasterID']);
+            $teams[] = $team;
         }
 
         return $teams;
@@ -88,3 +133,4 @@ class Team {
         $this->conn->close();
     }
 }
+?>
