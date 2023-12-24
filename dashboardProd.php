@@ -7,15 +7,13 @@ require_once './includes/teams.php';
 require_once './includes/projects.php';
 require_once './includes/prodOwner.php';
 
+$oldEmail = $_SESSION['email'];
+User::initSession($conn, $oldEmail);
 
-$userObj = new User();
+$userObj = new User($_SESSION['image'], $_SESSION['firstName'], $_SESSION['lastName'], $_SESSION['email'], $_SESSION['password'], $_SESSION['phoneNum'], $_SESSION['role'], $_SESSION['equipeID']);
 $teamObj = new Team();
 $prodObj = new ProdOwner();
 $projectObj = new Project();
-
-$oldEmail = $_SESSION['email'];
-
-$userObj->initSession($oldEmail);
 
 ?>
 <!DOCTYPE html>

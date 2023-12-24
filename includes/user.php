@@ -238,6 +238,7 @@ class User {
             $_SESSION['image'] = $user['image'];
             $_SESSION['firstName'] = $user['firstName'];
             $_SESSION['lastName'] = $user['lastName'];
+            $_SESSION['password'] = $user['pass'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['phoneNum'] = $user['phoneNum'];
             $_SESSION['role'] = $user['role'];
